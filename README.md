@@ -89,9 +89,17 @@ When `Docker.url` is not explicitly set, the gem resolves the endpoint the same 
    - Otherwise the `currentContext` field of `$DOCKER_CONFIG/config.json` (defaults to `~/.docker/config.json`) is used.
    - The context's `Endpoints.docker.Host` is read from `$DOCKER_CONFIG/contexts/meta/<sha256(name)>/meta.json`.
    - A context named `default`, a missing config file, or a missing meta file all fall through to the next step.
-4. The default socket `unix:///var/run/docker.sock`.
+4. The default socket: `unix:///var/run/docker.sock` on Linux/macOS, or `npipe:////./pipe/docker_engine` on Windows.
 
 Set `DOCKER_API_SKIP_CONTEXT=1` to disable step 3 entirely and keep the pre-context behavior (env vars only, then default socket).
+
+#### Windows named pipes (npipe)
+
+On Windows the default Docker endpoint is the named pipe `\\.\pipe\docker_engine`, expressed as a URL like `npipe:////./pipe/docker_engine`. The gem talks to it directly through the Win32 API (via the `ffi` gem), so no extra setup is needed when Docker Desktop is running. You can also point the gem at a non-default pipe:
+
+```ruby
+Docker.url = 'npipe:////./pipe/some_other_engine'
+```
 
 Only the endpoint URL is read from the context; TLS settings still come from `DOCKER_CERT_PATH` / `DOCKER_SSL_VERIFY` (see [SSL](#ssl) below) or from `Docker.options`.
 
