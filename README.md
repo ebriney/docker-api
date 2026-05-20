@@ -78,6 +78,14 @@ irb(main):004:0> Docker.options
 => {}
 ```
 
+#### Windows named pipes (npipe)
+
+On Windows the default Docker endpoint is the named pipe `\\.\pipe\docker_engine`, expressed as a URL like `npipe:////./pipe/docker_engine`. When no `DOCKER_URL` / `DOCKER_HOST` is set the gem falls back to this pipe (instead of the unix socket) and talks to it directly through the Win32 API (via the `ffi` gem), so no extra setup is needed when Docker Desktop is running. You can also point the gem at a non-default pipe:
+
+```ruby
+Docker.url = 'npipe:////./pipe/some_other_engine'
+```
+
 ### SSL
 
 When running docker using SSL, setting the DOCKER_CERT_PATH will configure docker-api to use SSL.
