@@ -16,12 +16,28 @@ describe Docker do
         allow(ENV).to receive(:[]).with('DOCKER_HOST').and_return(nil)
         allow(ENV).to receive(:[]).with('DOCKER_CERT_PATH').and_return(nil)
         allow(Docker).to receive(:context_url).and_return(nil)
+        allow(Gem).to receive(:win_platform?).and_return(false)
         Docker.reset!
       end
       after { Docker.reset! }
 
       its(:options) { should == {} }
       its(:url) { should == 'unix:///var/run/docker.sock' }
+      its(:connection) { should be_a Docker::Connection }
+    end
+
+    context "when on Windows with no DOCKER_* ENV variables set" do
+      before do
+        allow(ENV).to receive(:[]).with('DOCKER_URL').and_return(nil)
+        allow(ENV).to receive(:[]).with('DOCKER_HOST').and_return(nil)
+        allow(ENV).to receive(:[]).with('DOCKER_CERT_PATH').and_return(nil)
+        allow(Docker).to receive(:context_url).and_return(nil)
+        allow(Gem).to receive(:win_platform?).and_return(true)
+        Docker.reset!
+      end
+      after { Docker.reset! }
+
+      its(:url) { should == 'npipe:////./pipe/docker_engine' }
       its(:connection) { should be_a Docker::Connection }
     end
 

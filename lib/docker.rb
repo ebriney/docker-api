@@ -40,7 +40,11 @@ module Docker
   require 'docker/rake_task' if defined?(Rake::Task)
 
   def default_socket_url
-    'unix:///var/run/docker.sock'
+    if Gem.win_platform?
+      'npipe:////./pipe/docker_engine'
+    else
+      'unix:///var/run/docker.sock'
+    end
   end
 
   def env_url
